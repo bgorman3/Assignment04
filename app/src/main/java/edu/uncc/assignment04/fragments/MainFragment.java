@@ -70,8 +70,8 @@ public class MainFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // Replace the MainFragment with IdentificationFragment
-                IdentificationFragment identificationFragment = IdentificationFragment.newInstance("param1", "param2");
-                getParentFragmentManager().beginTransaction()
+                IdentificationFragment identificationFragment = new IdentificationFragment();
+                                getParentFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, identificationFragment)
                         .addToBackStack(null)
                         .commit();

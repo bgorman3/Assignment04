@@ -1,66 +1,69 @@
 package edu.uncc.assignment04.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import edu.uncc.assignment04.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link IdentificationFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class IdentificationFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public IdentificationFragment() {
-        // Required empty public constructor
+    public interface OnDataPass {
+        void onDataPass(String name, String email, String role);
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment IdentificationFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static IdentificationFragment newInstance(String param1, String param2) {
-        IdentificationFragment fragment = new IdentificationFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private OnDataPass dataPasser;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            dataPasser = (OnDataPass) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement OnDataPass");
         }
     }
 
+    public void passDataToActivity() {
+        EditText nameField = getView().findViewById(R.id.editTextName);
+        EditText emailField = getView().findViewById(R.id.editTextEmail);
+        // Find the RadioGroup and the selected RadioButton
+        RadioGroup roleGroup = getView().findViewById(R.id.radioGroup);
+        int selectedId = roleGroup.getCheckedRadioButtonId();
+        RadioButton selectedRoleButton = getView().findViewById(selectedId);
+
+        // Extract the text from the selected RadioButton
+        String role = selectedRoleButton.getText().toString();
+
+        // Extract the text from the EditText fields
+        String name = nameField.getText().toString();
+        String email = emailField.getText().toString();
+
+        // Pass the data to the activity using the OnDataPass interface
+        dataPasser.onDataPass(name, email, role);
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_identification, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_identification, container, false);
+        Button buttonNext = view.findViewById(R.id.buttonNext);
+        buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                passDataToActivity();
+            }
+        });
+        return view;
     }
 }
